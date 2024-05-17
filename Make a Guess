@@ -1,0 +1,20 @@
+random_number = random.randint(0, Upper_bound)
+
+guess = 0
+
+while True:
+    guess +=1
+    user_guess = input("Make a guess: ")
+    if user_guess.isdigit():
+        user_guess = int(user_guess)
+    else:
+        print("Enter a number ")
+        continue
+    if user_guess == random_number:
+        print("Way to go!")
+        print("It took", guess, "attempts" )
+        break
+    elif user_guess > random_number:
+            print("Try again, guess below ")
+    else:
+            print("Try again, guess above")
