@@ -47,9 +47,37 @@ search.addEventListener('click', () => {
                     case 'Haze':
                         image.src = 'Haze.png';
                         break;
-                    case 'Storm':
-                        image.src = 'Thunder.png';
-
+                    case 'Thunderstorm':
+                        image.src = 'thunder.png';
+                        break;
+                    case 'Mist':
+                        image.src = 'Haze.png';
+                        break;
+                    case 'Smoke':
+                        image.src = 'Smoke.png';
+                        break;
+                    case 'Dust':
+                        image.src = 'Dust whirl.png'; 
+                        break;
+                    case 'Fog':
+                        image.src = 'Haze.png';
+                        break;
+                    case 'Sand':
+                        image.src = 'sand.png';
+                        break;
+                    case 'Dust':
+                        image.src = 'Dust.png';
+                        break;
+                    case 'Ash':
+                        image.src = 'volcanic ash.png';
+                        break;
+                    case 'Squall':
+                        image.src = 'Squall.png';
+                        break;
+                    case 'Tornado':
+                        image.src = 'tornado.png';
+                        break;
+        
                     default:
                         image.src = '';
                 }
