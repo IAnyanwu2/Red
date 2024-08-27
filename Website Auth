@@ -1,0 +1,119 @@
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, get, update } from "firebase/database";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-fE4ELjNK9lv9VQ1AZWqM1Z3t-aGcUUQ",
+  authDomain: "roto-e6b1e.firebaseapp.com",
+  projectId: "roto-e6b1e",
+  storageBucket: "roto-e6b1e.appspot.com",
+  messagingSenderId: "135158055865",
+  appId: "1:135158055865:web:cec9d0a92b541328982c68"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+function validate_email(email) {
+  const expression = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+  return expression.test(email);
+}
+
+function validate_password(password) {
+  return password.length >= 6;
+}
+
+function displayWelcomeMessage(username) {
+  const welcomeMessageElement = document.getElementById('welcome-message');
+  if (welcomeMessageElement) {
+    const welcomeMessage = `Welcome, ${username}!`;
+    welcomeMessageElement.textContent = welcomeMessage;
+    welcomeMessageElement.style.display = 'block'; // Show the message
+
+    // Hide the message after 10 seconds
+    setTimeout(() => {
+      welcomeMessageElement.style.display = 'none';
+    }, 10000);
+  }
+}
+
+function register() {
+  const username = document.getElementById("register-username").value;
+  const email = document.getElementById("register-email").value;
+  const password = document.getElementById("register-password").value;
+
+  if (!validate_email(email) || !validate_password(password)) {
+    alert('Invalid Email or Password!');
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      const user_data = {
+        email: email,
+        username: username,
+        last_login: Date.now(),
+      };
+
+      set(ref(db, 'users/' + user.uid), user_data)
+        .then(() => {
+          alert('User Created!');
+        })
+        .catch((error) => {
+          console.error('Error saving user data:', error.message);
+        });
+    })
+    .catch((error) => {
+      console.error('Error during registration:', error.message);
+      alert('Registration failed: ' + error.message);
+    });
+}
+
+function login() {
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  if (!validate_email(email) || !validate_password(password)) {
+    alert('Invalid Email or Password!');
+    return;
+  }
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      const database_ref = ref(db, 'users/' + user.uid);
+
+      get(database_ref)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const user_data = snapshot.val();
+            const username = user_data.username;
+
+            displayWelcomeMessage(username);
+
+            update(database_ref, {
+              last_login: Date.now()
+            });
+          } else {
+            console.error('No data available');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching user data:', error.message);
+        });
+    })
+    .catch((error) => {
+      console.error('Error during login:', error.message);
+      alert('Login failed: ' + error.message);
+    });
+}
+
+// Expose functions to the global scope
+window.register = register;
+window.login = login;
+
+export { register, login };
